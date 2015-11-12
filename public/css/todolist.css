@@ -1,0 +1,82 @@
+/* Standard Todo List */
+.todo-list{
+  border-radius: 4px;
+  border: 1px solid black;
+  margin: 50px 0;
+  overflow: auto;
+}
+
+
+  .todo-list-search{
+    padding:       20px;
+    background:    #DCDCDC;
+    border-bottom: 1px solid black;
+  }
+
+  .todo-list-items{
+
+  }
+
+      .todo-item{
+          border-bottom: 1px solid gray;
+          padding:       10px;
+      }
+
+      .todo-item:first-child{
+        border-radius: 4px 4px 0 0;
+      }
+
+      .todo-item:last-child{
+        border-radius: 0 0 4px 4px;
+        border-bottom: none;
+      }
+
+      .todo-item-checkbox{
+          float: left;
+          margin-right: 10px;
+      }
+
+      .todo-item-label{
+          float: left;
+      }
+
+      .todo-item-actions{
+        float:   right;
+      }
+
+      .todo-item-status{
+          float:   right;
+          display: none;
+      }
+
+      .todo-list-items-empty{
+          text-align: center;
+          padding:    40px;
+      }
+
+/* TODO Item Finished */
+.todo-item-finished{
+    background: #DFFFC6;
+}
+
+  .todo-item-finished .todo-item-label{
+    text-decoration: line-through;
+  }
+
+  .todo-item-finished .todo-item-status-ok{
+     display: block;
+  }
+
+/* TODO Item OK */
+.todo-item-late{
+    background: #EFD5D6;
+}
+
+  .todo-item-late .todo-item-label{
+     color: #993031;
+  }
+
+  .todo-item-late .todo-item-status-late{
+     display: block;
+     color:   #993031;
+  }

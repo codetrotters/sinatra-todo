@@ -1,3 +1,6 @@
+.DS_STORE
+db/*.sqlite3
+
 *.gem
 *.rbc
 /.config
@@ -12,7 +15,7 @@
 ## Specific to RubyMotion:
 .dat*
 .repl_history
-build/
+uild/
 
 ## Documentation cache and generated files:
 /.yardoc/

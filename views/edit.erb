@@ -1,0 +1,49 @@
+<div class='well'>
+
+    <form class='form' method="POST" action="">
+
+      <div class='row'>
+        <div class='col-sm-10'>
+            <label> TODO </label>
+            <div class='form-group'>
+              <input type="text" name='content' class="form-control" placeholder='Enter a new todo here' value='<%= @todo.content %>' />
+            </div>
+        </div>
+        <div class='col-sm-2'>
+          <div class='form-group'>
+            <label> Priority </label>
+            <select class='form-control' name='priority'>
+              <optgroup label="Priority">
+                <option value='0' <%= @todo.priority == 0 ? "selected" : "" %>> Low    </option>
+                <option value='1' <%= @todo.priority == 1 ? "selected" : "" %>> Medium </option>
+                <option value='2' <%= @todo.priority == 2 ? "selected" : "" %>> High   </option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    <br />
+
+    <div class='row'>
+      <div class='col-sm-6'>
+        <button type="submit" class="btn btn-block btn-primary">
+          <i class='glyphicon glyphicon-edit'></i>
+          Edit
+        </button>
+      </div>
+      <div class='col-sm-6'>
+        <a href='/' class="btn btn-block btn-danger">
+          <i class='glyphicon glyphicon-remove'></i>
+          Cancel
+        </a>
+      </div>
+    </div>
+    <div class='text-center'>
+
+
+    </div>
+
+  </form>
+
+</div>
