@@ -8,6 +8,15 @@
   <body>
       <div class='container'>
 
+
+        <% if authenticated? %>
+        <div class='text-right'>
+          <i class='glyphicon glyphicon-user'></i>
+          <%= authenticated_user.username %> |
+          <a href='/logout'> Logout </a>
+        </div>
+        <% end %>
+
         <h1> TODO APP </h1>
         <hr />
 

@@ -1,5 +1,7 @@
 class Todo < ActiveRecord::Base
 
+  belongs_to :user
+
   validates :content,   presence: true , length: { minimum: 2 }
   validates :status,    presence: true , inclusion: { in: [0,1] }
   validates :priority,  presence: true , inclusion: { in: [0,1,2] }

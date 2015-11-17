@@ -1,29 +1,81 @@
 require 'sinatra/base'
+require 'digest'
 
 module Sinatra
   module Auth
 
     #Define Helper methods
     module Helpers
-      def authorized?
+
+      #Check if an user is logged in
+      def authenticated?
         session[:authorized] || false
       end
 
-      def authorize( user )
-        #TODO: NOT Implemented yet
-        session[:authorized] = true
+      #Return the current authenticated user
+      def authenticated_user
+        user = nil
+        if authenticated?
+          user = User.find( session[:authorized] )
+        end
+        user
       end
 
-      def protected!
-        redirect options.login_url unless authorized?
+      #Checks if a specific user is the one authenticated
+      def authenticated_user?( user )
+          logged_in_user = authenticated_user
+          if user == nil || logged_in_user == nil
+            return false
+          end
+          logged_in_user == user
+      end
+
+      #If the passed in user is not authenticated, stop execution
+      def ensure_user( user )
+          if not authenticated_user? user
+            halt 403 , "Forbidden"
+          end
+      end
+
+      #Authenticate an user
+      def authenticate( username , password )
+
+        #Find the user
+        password_hashed = Digest::SHA256.hexdigest( password )
+        user = User.find_by( username: username , password: password_hashed )
+
+        #Save the user id to the session
+        session[:authorized] = user ? user.id : nil
+
+      end
+
+      #Make sure the user is authenticated, before proceeding
+      #You can also past a list of roles, one of them
+      #must match the current authenticated roles
+      def protected!( *roles )
+
+        #Check if the user is logged in
+        redirect  options.login_url unless authenticated?
+
+        #Check roles
+        unless roles.empty?
+          user            = authenticated_user()
+          user_roles      = user.roles.to_s.split( "," )
+          required_roles  = roles.flatten
+          roles_in_common = user_roles & required_roles
+          if roles_in_common.empty?
+            halt 403 , "Forbidden"
+          end
+        end
+
       end
 
       def logout!( redirect = true )
-        session[:authorized] = false
-        redirect options.login_url if redirect
+        session[:authorized] = nil
+        redirect options.login_url if options.login_url
       end
-    end
 
+    end
 
     #Configure Application
     def self.registered(app)
@@ -36,6 +88,7 @@ module Sinatra
 
       #Make sure sessions are enabled
       app.enable :sessions
+
     end
 
   end

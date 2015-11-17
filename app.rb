@@ -13,7 +13,8 @@ require './lib/auth'
 Dir[File.dirname(__FILE__) + '/models/*.rb'].each {|file| require file }
 
 #Configure Sinatra
-set    :database, {adapter: "sqlite3", database: "./db/db.sqlite3"}
+set    :database, {adapter: "sqlite3", database: "./db/db.sqlite3" , encoding: "utf8"}
+set    :session_secret,     'b51bffb91a03fa8a07bf9158e367bfef'
 enable :sessions
 
 #Controllers
@@ -27,6 +28,9 @@ get '/' do
 
   #Get the list of todos
   @todos = Todo.paginate( :page => params[:page] , :per_page => 10 )
+
+  #Filter by logged in user
+  @todos = @todos.where( user: authenticated_user() )
 
   #Search todos
   if search && !search.empty?
@@ -58,6 +62,7 @@ post '/new' do
     todo.content  = params["content"]
     todo.priority = params["priority"]
     todo.status   = 0
+    todo.user     = authenticated_user
     todo.save!
 
     #Save success message to the session
@@ -67,6 +72,7 @@ post '/new' do
 
       #Save success message to the session
       flash[:danger] = "There is an error with your data"
+
   end
 
   #Redirect to list
@@ -83,6 +89,11 @@ get '/finish/:id' do
 
   #Find the todo item and change status
   todo = Todo.find id
+
+  #Check that the todo belongs to the user
+  ensure_user todo.user
+
+  #Save
   todo.status  = 1
   todo.save!
 
@@ -100,6 +111,11 @@ get '/unfinish/:id' do
 
   #Find the todo item and change status
   todo = Todo.find id
+
+  #Check that the todo belongs to the user
+  ensure_user todo.user
+
+  #Save
   todo.status  = 0
   todo.save!
 
@@ -120,6 +136,9 @@ get '/delete/:id' do
 
     #Find the todo item
     todo = Todo.find id
+
+    #Make sure the todo belongs to the user
+    ensure_user todo.user
 
     #Delete the todo
     todo.delete
@@ -149,6 +168,9 @@ get '/edit/:id' do
   #Find the todo item
   @todo = Todo.find id
 
+  #Check that the todo belongs to the user
+  ensure_user @todo.user
+
   #Render the view
   erb :edit
 
@@ -163,6 +185,9 @@ post '/edit/:id' do
 
   #Find the todo item
   @todo = Todo.find id
+
+  #Check that the todo belongs to the user
+  ensure_user @todo.user
 
   #Update its content
   begin
@@ -192,7 +217,8 @@ get '/login' do
 end
 
 post '/login' do
-  if authorize( nil )
+
+  if authenticate( params['username'] , params['password'] )
     redirect to("/")
   else
       @error = "Invalid Username/Password"
