@@ -45,6 +45,8 @@ get '/' do
   #Order Todos
   @todos = @todos.order( "status ASC , priority DESC" )
 
+
+
   #Render the view
   erb :list
 
@@ -131,27 +133,17 @@ get '/delete/:id' do
   #Get the id from the request
   id = params["id"]
 
+  #Find the todo item
+  todo = Todo.find id
+
+  #Make sure the todo belongs to the user
+  ensure_user todo.user
+
   #Delete the todo
-  begin
+  todo.delete
 
-    #Find the todo item
-    todo = Todo.find id
-
-    #Make sure the todo belongs to the user
-    ensure_user todo.user
-
-    #Delete the todo
-    todo.delete
-
-    #Save success message to the session
-    flash[:success] = "Successfully deleted item"
-
-  rescue ActiveRecord::RecordNotFound
-
-    #An error occured, show message
-    flash[:danger] = "There was an error deleting todo list"
-
-  end
+  #Save success message to the session
+  flash[:success] = "Successfully deleted item"
 
   #Redirect to list
   redirect to("/")
@@ -228,4 +220,17 @@ end
 
 get '/logout' do
   logout!
+end
+
+#Error Handling
+not_found do
+  'Not Found'
+end
+
+error ActiveRecord::RecordNotFound do
+  "Not Found"
+end
+
+error 403 do
+  'Access forbidden'
 end
